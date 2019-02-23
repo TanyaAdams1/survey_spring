@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+        "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+    <constant name="struts.devMode" value="false"/>
+    <constant name="struts.objectFactory" value="spring"/>
+    <package name="root" extends="struts-default">
+        <global-results>
+            <result name="error">WEB-INF/content/error.jsp</result>
+        </global-results>
+        <action name="viewAction" class="actions.ViewAction">
+            <result name="success">/WEB-INF/content/view.jsp</result>
+        </action>
+        <action name="submitAction" class="actions.SubmitAction" method="execute">
+            <interceptor-ref name="defaultStack"/>
+            <interceptor-ref name="token"/>
+            <result name="input">/WEB-INF/content/form.jsp</result>
+            <result name="success">/WEB-INF/content/success.jsp</result>
+            <result name="invalid.token">/WEB-INF/content/form.jsp</result>
+        </action>
+        <action name="login" class="actions.Login">
+            <result name="success">/WEB-INF/content/form.jsp</result>
+            <result name="token error">/WEB-INF/content/login.jsp</result>
+            <result name="server error">/WEB-INF/content/error.jsp</result>
+        </action>
+        <action name="delete" class="actions.DeleteAction">
+            <result name="success" type="chain">viewAction</result>
+        </action>
+    </package>
+</struts>

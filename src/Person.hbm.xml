@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping package="model">
+    <class name="Person" table="person">
+        <id name="id" type="int">
+            <generator class="identity"/>
+        </id>
+        <property name="name" type="string" not-null="true"/>
+        <property name="age" type="int" not-null="true"/>
+        <property name="gender" type="int" not-null="true"/>
+        <property name="email" type="string" not-null="true"/>
+    </class>
+</hibernate-mapping>

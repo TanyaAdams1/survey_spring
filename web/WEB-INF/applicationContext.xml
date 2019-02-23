@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:tx="http://www.springframework.org/schema/tx" xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
+    <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+          p:driverClass="com.mysql.jdbc.Driver"
+          p:jdbcUrl=""
+          p:user=""
+          p:password=""
+          p:maxPoolSize="40"
+          p:minPoolSize="1"
+          p:initialPoolSize="1"
+          p:maxIdleTime="20"/>
+    <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"
+          p:dataSource-ref="dataSource">
+        <property name="mappingResources">
+            <list>
+                <value>Person.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+                hibernate.hbm2ddl.auto=update
+                hibernate.show_sql=true
+                hibernate.format_sql=true
+            </value>
+        </property>
+    </bean>
+
+    <bean id="personDAO" class="dao.implement.PersonHibernateDAO"
+          p:sessionFactory-ref="sessionFactory"/>
+
+    <bean id="serviceTemplate" abstract="true" lazy-init="true" class="service.AbstractService"
+          p:personDAO-ref="personDAO"/>
+
+    <bean id="deleteService" class="service.DeleteService"
+          parent="serviceTemplate"/>
+
+    <bean id="submitService" class="service.SubmitService"
+          parent="serviceTemplate"/>
+
+    <bean id="viewService" class="service.ViewService"
+          parent="serviceTemplate"/>
+
+    <bean id="viewAction" name="viewAction2" class="actions.ViewAction"
+          p:viewService-ref="viewService" scope="request"/>
+
+    <bean id="submitAction" name="submitAction2" class="actions.SubmitAction" scope="prototype">
+        <property name="submitService" ref="submitService"/>
+    </bean>
+
+    <tx:annotation-driven/>
+    <bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager"
+          p:sessionFactory-ref="sessionFactory"/>
+
+    <bean id="accountDAO" class="dao.implement.AccountSQLDAO"
+          p:baseURL="http://162.105.146.180:8047/account/verify_token.php"/>
+    <bean id="login" class="actions.Login"
+          p:accountDAO-ref="accountDAO"
+          p:redirect="http://162.105.146.180:8547/"
+          scope="request"/>
+    <bean id="deleteAction" class="actions.DeleteAction"
+          p:deleteService-ref="deleteService" scope="request"/>
+</beans>
